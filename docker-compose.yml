@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  instagram-bot:
+    build: .
+    image: foxsnow/pyhton_insta_follow_bot
+    container_name: instagram-follow-bot
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 250M
+    # Environment variables
+    environment:
+      - UNFOLLOW_DAY=${UNFOLLOW_DAY:-7}
+      - LOGIN_NAME=${LOGIN_NAME}
+      - PASSWORD=${PASSWORD}
+
+    # Volume mappings for persistent data
+    volumes:
+      - ./session.json:/app/session.json
+      - ./follows.json:/app/follows.json
+      - ./timeline.json:/app/timeline.json
+
+    # Create empty files if they don't exist
+    command: >
+      sh -c "
+        touch /app/follows.json /app/timeline.json &&
+        python index.py
+      "
+
+    # # Health check
+    # healthcheck:
+    #   test:
+    #     [
+    #       "CMD",
+    #       "python",
+    #       "-c",
+    #       "import os; exit(0 if os.path.exists('/app/session.json') else 1)",
+    #     ]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+
+    # # Logging configuration
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "10m"
+    #     max-file: "3"
+
+# # Create named volumes for backup
+# volumes:
+#   bot-data:
+#     driver: local
