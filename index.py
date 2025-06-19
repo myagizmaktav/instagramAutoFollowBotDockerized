@@ -18,12 +18,12 @@ password = os.getenv('PASSWORD', 'your_password')  # Instagram password
 cl = Client()
 
 # if sessionjson exists, load it
-# if Path("./session.json").exists():
-#     cl.load_settings(Path("./session.json"))
-#     cl.dump_settings(Path("./session.json"))
-# else:
-cl.login(loginname, password)
-cl.dump_settings(Path("./session.json"))
+if Path("./session.json").exists():
+    cl.load_settings(Path("./session.json"))
+    cl.dump_settings(Path("./session.json"))
+else:
+    cl.login(loginname, password)
+    cl.dump_settings(Path("./session.json"))
 
 user_id = cl.user_id_from_username(loginname)
 user_info = cl.user_info(user_id)
@@ -222,6 +222,8 @@ try:
         
         # Follow random user
         follow_random_user()
+        cl.load_settings(Path("./session.json"))
+        cl.dump_settings(Path("./session.json"))
         print("⏱️  Waiting 60 seconds before next follow...")
         time.sleep(60)  # Wait 60 seconds (1 minute)
         
